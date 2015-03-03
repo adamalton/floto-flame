@@ -1,5 +1,7 @@
 libs/
 .DS_Store
+db.sqlite3
+cache
 
 # Generic Python .gitigore from GitHub below...
 

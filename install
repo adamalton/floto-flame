@@ -39,3 +39,7 @@ if __name__ == "__main__":
     args = ["pip", "install", "-r", REQUIREMENTS_FILE, "-t", TARGET_DIR, "-I"]
     p = subprocess.Popen(args)
     p.wait()
+
+    # Now run syncdb...
+    print("Running migrate...")
+    args = ["python", "manage.py", "migrate", "--noinput"]
