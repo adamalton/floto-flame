@@ -1,4 +1,5 @@
 libs/
+.DS_Store
 
 # Generic Python .gitigore from GitHub below...
 
