@@ -1,7 +1,12 @@
 {% extends "base.html" %}
+{% load floto %}
 
 {% block title %}Flickr Photo Frame{% endblock %}
 
 {% block body %}
-	<h1>Put Photos Here</h1>
+	<ul>
+		{% for photo in photos %}
+			<li>{{photo|photo_url}} <img src="{{photo|photo_url}}" /></li>
+		{% endfor %}
+	</ul>
 {% endblock body %}

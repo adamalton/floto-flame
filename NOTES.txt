@@ -1,0 +1,9 @@
+Front end / back end communication:
+
+Back end to front end
+* Oauth token has expired.
+* Go to next photo
+* Go to previous photo
+
+Front end to back end
+* Refresh photo list

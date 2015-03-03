@@ -1,3 +1,4 @@
 django
+flickrapi
 #mock
 #model_mommy

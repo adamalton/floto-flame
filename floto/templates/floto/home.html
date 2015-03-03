@@ -10,4 +10,12 @@
 	<p>
 		<a href="{% url 'config' %}">Set Up</a>
 	</p>
+	{% if not have_valid_oauth_token %}
+		{% if config.token %}
+			<p>Your Flickr authentication has expired.</p>
+		{% else %}
+			<p>You must now authenticate this app with Flickr.</p>
+		{% endif %}
+		<p><a href="{{oauth_url}}">Authenticate</a></p>
+	{% endif %}
 {% endblock body %}
