@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Flickr Photo Frame{% endblock %}
+
+{% block body %}
+	<h1>Flickr Photo Frame</h1>
+	<p>
+		<a href="{% url 'frame' %}">View Frame</a>
+	</p>
+	<p>
+		<a href="{% url 'config' %}">Set Up</a>
+	</p>
+{% endblock body %}

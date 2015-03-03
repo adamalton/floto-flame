@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Config | Flickr Photo Frame{% endblock %}
+
+{% block body %}
+	<h1>Config</h1>
+	<form method="post" action="" accept-charset="utf-8">
+		{% csrf_token %}
+		{{form.as_p}}
+		<button type="submit">Save</button>
+	</form>
+{% endblock body %}
