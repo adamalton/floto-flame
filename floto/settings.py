@@ -79,3 +79,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, '.cache', 'django'),
+    }
+}
+
+FLICKR_API_KEY = '67be103b76e8c2569c4a366cc3f02b11'
+
+from floto.settings_local import * # should contain FLICKR_API_SECRET

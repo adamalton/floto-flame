@@ -1,4 +1,5 @@
 django
-flickrapi
+flickr_api
+#flickrapi
 #mock
 #model_mommy

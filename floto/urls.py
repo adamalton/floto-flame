@@ -13,4 +13,7 @@ urlpatterns = patterns('',
     url(r'^config/$', 'floto.views.config', name='config'),
     url(r'^flickr-oauth-callback/$', 'floto.views.flickr_oauth_callback', name='flickr_oauth_callback'),
     url(r'^image-proxy/$', 'floto.views.image_proxy', name='image_proxy'),
+
+    url(r'^start-oauth/$', 'floto.views.start_oauth', name='start_oauth'),
+    url(r'^oauth-callback/$', 'floto.views.oauth_callback', name='oauth_callback'),
 )

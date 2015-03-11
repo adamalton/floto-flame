@@ -1,77 +1,53 @@
-# STANDARD LIB
-import logging
-
 # LIBRARIES
-from django.shortcuts import render, redirect, get_object_or_404
+from django.conf import settings
+from django.core.cache import cache
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
+import flickr_api
 
 # FLOTO
-from floto.forms import ConfigForm
-from floto.models import Config
+from floto.models import Photo
 from floto.utils import (
-    get_flicker_api_instance,
-    get_oauth_auth_url,
-    get_object_or_none,
-    has_valid_oauth_token,
-    store_oauth_token,
+    get_oauth_callback_url,
 )
 
+AUTH_CACHE_KEY = "flickr_api_auth_object"
+AUTH_FILENAME = "flickr_api_auth.txt"
+flickr_api.set_keys(api_key=settings.FLICKR_API_KEY, api_secret = settings.FLICKR_API_SECRET)
 
-def home(request):
-    config = get_object_or_none(Config)
-    if not config:
-        # No settings yet, just redirect to the config page
-        return redirect("config")
-    # else...
-    flickr = get_flicker_api_instance(config)
-    if has_valid_oauth_token(flickr):
-        context = dict(
-            have_valid_oauth_token=True,
-        )
-    else:
-        context = dict(
-            have_valid_oauth_token=False,
-            oauth_url=get_oauth_auth_url(flickr, request),
-        )
-    return render(request, "floto/home.html", context)
+
+def start_oauth(request):
+    auth = flickr_api.auth.AuthHandler(callback=get_oauth_callback_url(request))
+    url = auth.get_authorization_url("read")
+    cache.set(AUTH_CACHE_KEY, auth)
+    return HttpResponseRedirect(url)
+
+
+def oauth_callback(request):
+    auth = cache.get(AUTH_CACHE_KEY)
+    auth.set_verifier(request.GET['oauth_verifier'])
+    #TODO: the request also contains 'oauth_token' - why do we not use/need that?
+    flickr_api.set_auth_handler(auth) # My god it's not thread safe
+    auth.save(AUTH_FILENAME)
+    return redirect("frame")
 
 
 def frame(request):
-    config = get_object_or_none(Config)
-    if not config:
-        return redirect('config')
-    flickr = get_flicker_api_instance(config)
-    if not has_valid_oauth_token(flickr):
-        return redirect('home')
-    response = flickr.photos.search(
-        user_id=config.flickr_username,
-        tags=config.tags_to_show
-    )
+    flickr_api.set_auth_handler(AUTH_FILENAME)
+    user = flickr_api.test.login()
+    photos = user.getPhotos()
     import pdb; pdb.set_trace()
+    # photos[0].save('photo.jpg')
+    for photo in photos:
+        url = photo.getPhotoFile()
+        rotation = photo['rotation']
+        Photo.objects.get_or_create(pk=photo['id'], url=url, rotation=rotation)
+        p = Photo.objects.get_or
+    photos = [p.getPhotoFile() for p in photos]
     context = dict(
-        photos=response['photos']['photo']
+        photos=photos,
     )
     return render(request, "floto/frame.html", context)
-
-
-def config(request):
-    config, created = Config.objects.get_or_create()
-    if request.method == "POST":
-        form = ConfigForm(request.POST, instance=config)
-        if form.is_valid():
-            form.save()
-            return redirect("home")
-    else:
-        form = ConfigForm(instance=config)
-    context = dict(form=form)
-    return render(request, "floto/config.html", context)
-
-
-def flickr_oauth_callback(request):
-    logging.info('We got a callback from Flickr, store the token')
-    token = request.GET['oauth_token']
-    store_oauth_token(token)
-    logging.info('Saved new oauth token')
-    return redirect('home')
 
 
 def image_proxy(request, img_id):

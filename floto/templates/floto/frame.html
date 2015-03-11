@@ -6,7 +6,7 @@
 {% block body %}
 	<ul>
 		{% for photo in photos %}
-			<li>{{photo|photo_url}} <img src="{{photo|photo_url}}" /></li>
+			<div><img src="{{photo}}" /></div>
 		{% endfor %}
 	</ul>
 {% endblock body %}

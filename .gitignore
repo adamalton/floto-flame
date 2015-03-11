@@ -2,6 +2,8 @@ libs/
 .DS_Store
 db.sqlite3
 cache
+floto/settings_local.py
+flickr_api_auth.txt
 
 # Generic Python .gitigore from GitHub below...
 

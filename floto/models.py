@@ -23,3 +23,10 @@ class Config(models.Model):
         default=5000000, # 5 GB
     )
 
+
+
+class Photo(models.Model):
+    id = models.PositiveIntegerField(primary_key=True) # prevent it being an AutoField
+    rotation = models.SmallPositiveIntegerField()
+    url = models.URLField()
+
