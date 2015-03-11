@@ -1,15 +1,18 @@
+# STANDARD LIB
+import logging
+
 # LIBRARIES
 from django.conf import settings
 from django.core.cache import cache
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
 import flickr_api
 
 # FLOTO
+from floto.http import JsonResponse
 from floto.models import Photo
-from floto.utils import (
-    get_oauth_callback_url,
-)
+from floto import utils
+
 
 AUTH_CACHE_KEY = "flickr_api_auth_object"
 AUTH_FILENAME = "flickr_api_auth.txt"
@@ -17,7 +20,7 @@ flickr_api.set_keys(api_key=settings.FLICKR_API_KEY, api_secret = settings.FLICK
 
 
 def start_oauth(request):
-    auth = flickr_api.auth.AuthHandler(callback=get_oauth_callback_url(request))
+    auth = flickr_api.auth.AuthHandler(callback=utils.get_oauth_callback_url(request))
     url = auth.get_authorization_url("read")
     cache.set(AUTH_CACHE_KEY, auth)
     return HttpResponseRedirect(url)
@@ -32,25 +35,51 @@ def oauth_callback(request):
     return redirect("frame")
 
 
-def frame(request):
+def trigger_photo_list_refresh(request):
+    """ Fetches the list of photos from Flickr and makes sure that we have a Photo object for each
+        one.
+    """
     flickr_api.set_auth_handler(AUTH_FILENAME)
     user = flickr_api.test.login()
     photos = user.getPhotos()
-    import pdb; pdb.set_trace()
-    # photos[0].save('photo.jpg')
     for photo in photos:
-        url = photo.getPhotoFile()
-        rotation = photo['rotation']
-        Photo.objects.get_or_create(pk=photo['id'], url=url, rotation=rotation)
-        p = Photo.objects.get_or
-    photos = [p.getPhotoFile() for p in photos]
-    context = dict(
-        photos=photos,
-    )
-    return render(request, "floto/frame.html", context)
+        logging.debug("Rotation: %s", photo.get('rotation', 0))
+        Photo.objects.update_or_create(
+            pk=photo['id'],
+            defaults=dict(
+                url=photo.getPhotoFile(),
+                rotation=photo.get('rotation', 0),
+                title=photo['title']
+            )
+        )
+    return HttpResponse("Photo list refreshed")
 
 
-def image_proxy(request, img_id):
-    raise NotImplementedError()
+def get_photo_list(request):
+    photos = Photo.objects.order_by('?')
+    data = []
+    for photo in photos:
+        data.append(dict(
+            id=photo.pk,
+            title=photo.title,
+            timestamp=photo.timestamp,
+            rotation=photo.rotation,
+            serving_url=photo.serving_url,
+        ))
+    return JsonResponse(data)
 
 
+def frame(request):
+    """ The main view which is actually used to display the photos. """
+    return render(request, "floto/frame.html", {})
+
+
+def image_proxy(request, photo_id):
+    """ A view which serves the image file (jpeg) for a photo, either from our local storage or
+        by fetching it from Flickr (and putting it in local storage in the process).
+    """
+    photo = get_object_or_404(Photo, pk=photo_id)
+    if not photo.cached_image:
+        photo.cache_image()
+    image_data = photo.cached_image.read()
+    return HttpResponse(image_data, content_type=photo.content_type)

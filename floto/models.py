@@ -1,32 +1,42 @@
+# STANDARD LIB
+import logging
+import StringIO
+import urllib2
+
+# LIBRARIES
+from django.conf import settings
+from django.core.files.base import File
+from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils.safestring import mark_safe
-
-
-class Config(models.Model):
-    flickr_username = models.CharField(max_length=100, help_text="E.g. 73509078@N00")
-    api_key = models.CharField(max_length=100, verbose_name="API key")
-    secret = models.CharField(
-        max_length=100,
-        help_text=mark_safe(
-            'You can get these from '
-            '<a href="https://www.flickr.com/services/apps/create/apply/">'
-            'here</a>'
-        )
-    )
-    tags_to_show = models.CharField(
-        max_length=200,
-        help_text="Comma-separated list of tags which mark the photos that you want to show",
-    )
-    max_cache_size = models.PositiveIntegerField(
-        verbose_name="Maximum disk space to use for local photo cache (MB)",
-        help_text="The cache prevents re-fetching of photos, so helps reduce bandwidth usage",
-        default=5000000, # 5 GB
-    )
-
 
 
 class Photo(models.Model):
     id = models.PositiveIntegerField(primary_key=True) # prevent it being an AutoField
-    rotation = models.SmallPositiveIntegerField()
+    title = models.CharField(max_length=255, blank=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    rotation = models.PositiveIntegerField(default=0)
     url = models.URLField()
+    cached_image = models.FileField(upload_to=settings.IMAGES_DIR, null=True)
+
+    def cache_image(self, refresh=False):
+        if self.cached_image and not refresh:
+            logging.info("Not re-caching image %s as we already have it", self.pk)
+            return
+        image = urllib2.urlopen(self.url)
+        name = "%s.jpg" % self.pk
+        data = File(StringIO.StringIO(image.read()))
+        self.cached_image.save(name, data)
+
+    @property
+    def serving_url(self):
+        return reverse("image_proxy", kwargs={"photo_id": self.pk})
+
+    @property
+    def content_type(self):
+        # Take a guess at the content type. Flicr doesn't seem to provide it when it serves the image.
+        ext = self.url.rsplit('.', 1)[-1].lower()
+        if ext in ('jpg', 'jpeg', 'png', 'gif', 'tiff'):
+            return "image/%s" % ext
+        return ""
+
 

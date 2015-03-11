@@ -79,6 +79,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'staticlibs'),
+)
+
 
 CACHES = {
     'default': {
@@ -86,6 +91,8 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, '.cache', 'django'),
     }
 }
+
+IMAGES_DIR = os.path.join(BASE_DIR, '.cache', 'images')
 
 FLICKR_API_KEY = '67be103b76e8c2569c4a366cc3f02b11'
 

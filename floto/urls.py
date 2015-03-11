@@ -1,19 +1,13 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'floto.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
+urlpatterns = patterns('floto.views',
 
-    # url(r'^admin/', include(admin.site.urls)),
-
-    url(r'^$', 'floto.views.home', name='home'),
-    url(r'^frame/$', 'floto.views.frame', name='frame'),
-    url(r'^config/$', 'floto.views.config', name='config'),
-    url(r'^flickr-oauth-callback/$', 'floto.views.flickr_oauth_callback', name='flickr_oauth_callback'),
-    url(r'^image-proxy/$', 'floto.views.image_proxy', name='image_proxy'),
-
-    url(r'^start-oauth/$', 'floto.views.start_oauth', name='start_oauth'),
-    url(r'^oauth-callback/$', 'floto.views.oauth_callback', name='oauth_callback'),
+    # url(r'^$', 'home', name='home'),
+    url(r'^frame/$', 'frame', name='frame'),
+    url(r'^get-photo-list/$', 'get_photo_list', name='get_photo_list'),
+    url(r'^trigger-photo-list-refresh/$', 'trigger_photo_list_refresh', name='trigger_photo_list_refresh'),
+    url(r'^image-proxy/(?P<photo_id>\d+)/$', 'image_proxy', name='image_proxy'),
+    url(r'^start-oauth/$', 'start_oauth', name='start_oauth'),
+    url(r'^oauth-callback/$', 'oauth_callback', name='oauth_callback'),
 )

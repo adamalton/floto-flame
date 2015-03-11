@@ -4,9 +4,7 @@
 {% block title %}Flickr Photo Frame{% endblock %}
 
 {% block body %}
-	<ul>
-		{% for photo in photos %}
-			<div><img src="{{photo}}" /></div>
-		{% endfor %}
-	</ul>
+	<div id="frame"></div>
+	<script src="{{STATIC_URL}}jquery-2.1.3.min.js"></script>
+	<script src="{{STATIC_URL}}floto/js/floto.js"></script>
 {% endblock body %}
