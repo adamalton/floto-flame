@@ -13,6 +13,7 @@ from floto.http import JsonResponse
 from floto.models import Photo
 from floto import utils
 
+PHOTO_TAGS = "photoframe"
 
 AUTH_CACHE_KEY = "flickr_api_auth_object"
 AUTH_FILENAME = "flickr_api_auth.txt"
@@ -40,8 +41,15 @@ def trigger_photo_list_refresh(request):
         one.
     """
     flickr_api.set_auth_handler(AUTH_FILENAME)
-    user = flickr_api.test.login()
-    photos = user.getPhotos()
+    photos = []
+    page = 1
+    pages = 1
+    while page <= pages:
+        result = flickr_api.Photo.search(tags=PHOTO_TAGS, user_id="me", page=page)
+        photos += [p for p in result]
+        pages = result.info.pages
+        page += 1
+
     for photo in photos:
         logging.debug("Rotation: %s", photo.get('rotation', 0))
         Photo.objects.update_or_create(
