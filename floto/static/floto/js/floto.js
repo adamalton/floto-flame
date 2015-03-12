@@ -5,7 +5,7 @@ var floto = {
 	photoList: [],
 	currentPhotoIndex: null,
 	displayTime: 7000,
-	refreshListTime: 1000 * 60, // * 60, // 1 hour
+	refreshListTime: 1000 * 60 * 60, // 1 hour
 	$frame: null,
 
 	init: function(){
@@ -80,6 +80,9 @@ var floto = {
 				$(this).remove();
 				floto.$frame.find("img.upnext").removeClass("upnext").addClass("current");
 				floto.currentPhotoIndex ++;
+				if(floto.currentPhotoIndex >= floto.photoList.length){
+					floto.currentPhotoIndex = -1;
+				}
 				floto.putNextPhotoInPlace();
 			}
 		);
