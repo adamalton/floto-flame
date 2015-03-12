@@ -12,7 +12,6 @@ var floto = {
 		floto.$frame = $("#frame");
 		floto.getPhotoList();
 		setInterval(floto.changePhoto, floto.displayTime);
-		setInterval(floto.getPhotoList, floto.refreshListTime);
 		setInterval(floto.triggerPhotoListRefresh, floto.refreshListTime);
 	},
 
@@ -45,7 +44,7 @@ var floto = {
 	triggerPhotoListRefresh: function(){
 		// Calls a URL on the server which triggers it to go and refresh its list of photos from Flickr
 		floto.log("Triggering photo list refresh (server side)");
-		$.get(floto.triggerPhotoListRefreshURL);
+		$.get(floto.triggerPhotoListRefreshURL, null, floto.getPhotoList);
 	},
 
 	setFirstPhoto: function(){
