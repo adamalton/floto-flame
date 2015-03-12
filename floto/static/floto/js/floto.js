@@ -54,14 +54,22 @@ var floto = {
 		}else{
 			floto.currentPhotoIndex = 0;
 			photo = floto.photoList[floto.currentPhotoIndex];
-			$('<img/>').attr('src', photo.serving_url).addClass('current').appendTo(floto.$frame);
+			$('<img/>')
+				.attr('src', photo.serving_url)
+				.addClass('current')
+				.addClass('rotation' + String(photo.rotation))
+				.appendTo(floto.$frame);
 			floto.putNextPhotoInPlace();
 		}
 	},
 
 	putNextPhotoInPlace: function(){
 		photo = floto.photoList[floto.currentPhotoIndex + 1];
-		$('<img/>').attr('src', photo.serving_url).addClass('upnext').appendTo(floto.$frame);
+		$('<img/>')
+			.attr('src', photo.serving_url)
+			.addClass('upnext')
+			.addClass('rotation' + String(photo.rotation))
+			.appendTo(floto.$frame);
 	},
 
 	changePhoto: function(){

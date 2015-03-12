@@ -51,12 +51,11 @@ def trigger_photo_list_refresh(request):
         page += 1
 
     for photo in photos:
-        logging.debug("Rotation: %s", photo.get('rotation', 0))
         Photo.objects.update_or_create(
             pk=photo['id'],
             defaults=dict(
                 url=photo.getPhotoFile(),
-                rotation=photo.get('rotation', 0),
+                rotation=photo.rotation,
                 title=photo['title']
             )
         )
