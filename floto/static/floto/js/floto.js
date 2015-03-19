@@ -3,15 +3,15 @@ var floto = {
 	photoListURL: "/get-photo-list/",
 	triggerPhotoListRefreshURL: "/trigger-photo-list-refresh/",
 	photoList: [],
-	currentPhotoIndex: null,
-	displayTime: 7000,
+	nextPhotoIndex: null,
+	displayTime: 15000,
 	refreshListTime: 1000 * 60 * 60, // 1 hour
 	$frame: null,
 
 	init: function(){
 		floto.$frame = $("#frame");
 		floto.getPhotoList();
-		setInterval(floto.changePhoto, floto.displayTime);
+		// setInterval(floto.changePhoto, floto.displayTime);
 		setInterval(floto.triggerPhotoListRefresh, floto.refreshListTime);
 	},
 
@@ -52,8 +52,8 @@ var floto = {
 		if(floto.$frame.find("img").length){
 			floto.log("First photo already set.");
 		}else{
-			floto.currentPhotoIndex = 0;
-			photo = floto.photoList[floto.currentPhotoIndex];
+			floto.nextPhotoIndex = 0;
+			photo = floto.photoList[floto.nextPhotoIndex];
 			$('<img/>')
 				.attr('src', photo.serving_url)
 				.addClass('current')
@@ -64,7 +64,10 @@ var floto = {
 	},
 
 	putNextPhotoInPlace: function(){
-		photo = floto.photoList[floto.currentPhotoIndex + 1];
+		if(floto.nextPhotoIndex >= floto.photoList.length){
+			floto.nextPhotoIndex = -1;
+		}
+		photo = floto.photoList[floto.nextPhotoIndex + 1];
 		$('<img/>')
 			.attr('src', photo.serving_url)
 			.addClass('upnext')
@@ -74,15 +77,13 @@ var floto = {
 
 	changePhoto: function(){
 		floto.log("changePhoto called");
-		floto.$frame.find("img.current").hide(
-			400,
+		floto.$frame.find("img.upnext").animate({"opacity":1}, 400);
+		floto.$frame.find("img.current").animate(
+			{"opacity": 0}, 400, "swing",
 			function(){
 				$(this).remove();
 				floto.$frame.find("img.upnext").removeClass("upnext").addClass("current");
-				floto.currentPhotoIndex ++;
-				if(floto.currentPhotoIndex >= floto.photoList.length){
-					floto.currentPhotoIndex = -1;
-				}
+				floto.nextPhotoIndex ++;
 				floto.putNextPhotoInPlace();
 			}
 		);
