@@ -42,4 +42,4 @@ if __name__ == "__main__":
 
     # Now run syncdb...
     print("Running migrate...")
-    args = ["python", "manage.py", "migrate", "--noinput"]
+    args = ["python", "manage.py", "migrate"]
