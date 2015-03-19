@@ -4,14 +4,14 @@ var floto = {
 	triggerPhotoListRefreshURL: "/trigger-photo-list-refresh/",
 	photoList: [],
 	nextPhotoIndex: null,
-	displayTime: 15000,
+	displayTime: 5000,
 	refreshListTime: 1000 * 60 * 60, // 1 hour
 	$frame: null,
 
 	init: function(){
 		floto.$frame = $("#frame");
 		floto.getPhotoList();
-		// setInterval(floto.changePhoto, floto.displayTime);
+		setInterval(floto.changePhoto, floto.displayTime);
 		setInterval(floto.triggerPhotoListRefresh, floto.refreshListTime);
 	},
 
@@ -47,6 +47,17 @@ var floto = {
 		$.get(floto.triggerPhotoListRefreshURL, null, floto.getPhotoList);
 	},
 
+	insertImg: function(photo, classes){
+		// Create a jQuery object of a <img> tag for the given photo object from the API
+		floto.log("insertImg called");
+		return $('<img/>')
+			.attr('src', photo.serving_url)
+			.addClass('rotation' + String(photo.rotation))
+			.addClass(classes)
+			.load(floto.fixTransformedDimensions)
+			.appendTo(floto.$frame);
+	},
+
 	setFirstPhoto: function(){
 		floto.log("setFirstPhoto called");
 		if(floto.$frame.find("img").length){
@@ -54,25 +65,18 @@ var floto = {
 		}else{
 			floto.nextPhotoIndex = 0;
 			photo = floto.photoList[floto.nextPhotoIndex];
-			$('<img/>')
-				.attr('src', photo.serving_url)
-				.addClass('current')
-				.addClass('rotation' + String(photo.rotation))
-				.appendTo(floto.$frame);
+			var $img = floto.insertImg(photo, 'current');
 			floto.putNextPhotoInPlace();
 		}
 	},
 
 	putNextPhotoInPlace: function(){
+		floto.log("putNextPhotoInPlace called");
 		if(floto.nextPhotoIndex >= floto.photoList.length){
 			floto.nextPhotoIndex = -1;
 		}
 		photo = floto.photoList[floto.nextPhotoIndex + 1];
-		$('<img/>')
-			.attr('src', photo.serving_url)
-			.addClass('upnext')
-			.addClass('rotation' + String(photo.rotation))
-			.appendTo(floto.$frame);
+		var $img = floto.insertImg(photo, 'upnext');
 	},
 
 	changePhoto: function(){
@@ -81,12 +85,27 @@ var floto = {
 		floto.$frame.find("img.current").animate(
 			{"opacity": 0}, 400, "swing",
 			function(){
+				floto.log("animation finished");
 				$(this).remove();
 				floto.$frame.find("img.upnext").removeClass("upnext").addClass("current");
 				floto.nextPhotoIndex ++;
 				floto.putNextPhotoInPlace();
 			}
 		);
+	},
+
+	fixTransformedDimensions: function(){
+		// We rotate photos using CSS transform: rotate.  The problem is that the photo still
+		// effectively has its original dimensions, so the width is the height and the height is
+		// the width, which screws up other CSS.  This attempts to fix that.
+		floto.log("fixTransformedDimensions called");
+		var $img = $(this);
+		if($img.hasClass('rotation90') || $img.hasClass('rotation90')){
+			var new_max_height = Math.min(parseInt($img.css('max-width')), $img.width());
+			var new_max_width = Math.min(parseInt($img.css('max-height')), $img.height());
+			$img.css({'max-height': new_max_height + "px", 'max-width': new_max_width + "px"});
+			// $img.css({width: $img.height() + "px", height: $img.width() + "px"});
+		}
 	}
 };
 
