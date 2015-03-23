@@ -4,7 +4,7 @@ var floto = {
 	triggerPhotoListRefreshURL: "/trigger-photo-list-refresh/",
 	photoList: [],
 	nextPhotoIndex: null,
-	displayTime: 5000,
+	displayTime: 15000,
 	refreshListTime: 1000 * 60 * 60, // 1 hour
 	$frame: null,
 
@@ -13,6 +13,7 @@ var floto = {
 		floto.getPhotoList();
 		setInterval(floto.changePhoto, floto.displayTime);
 		setInterval(floto.triggerPhotoListRefresh, floto.refreshListTime);
+		floto.tryEnterFullScreen();
 	},
 
 	log: function(msg){
@@ -106,6 +107,18 @@ var floto = {
 			$img.css({'max-height': new_max_height + "px", 'max-width': new_max_width + "px"});
 			// $img.css({width: $img.height() + "px", height: $img.width() + "px"});
 		}
+	},
+
+	tryEnterFullScreen: function(){
+		// Most browsers don't allow fullscreen unless it's triggered by a user action, but
+		// if that restriction is disabled we can do it directly
+		floto.enterFullScreen(); // This doesn't actually throw an error
+		// And there's no way to check if full screen is activated
+		$(document).on('click', floto.enterFullScreen); // So we have to do this anyway
+	},
+
+	enterFullScreen: function(){
+		floto.$frame[0].mozRequestFullScreen();
 	}
 };
 
