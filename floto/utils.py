@@ -26,3 +26,14 @@ def cache_images(limit=None):
         photos = photos[:limit]
     for photo in photos:
         photo.cache_image()
+
+def do_with_retry(func, *args, **kwargs):
+    retries = kwargs.pop('_retries', 5)
+    catch = kwargs.pop('_catch', Exception)
+    tries = 0
+    while tries < retries:
+        try:
+            return func(*args, **kwargs)
+        except catch:
+            tries += 1
+    raise

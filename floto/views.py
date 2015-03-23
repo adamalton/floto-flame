@@ -50,15 +50,17 @@ def trigger_photo_list_refresh(request):
         pages = result.info.pages
         page += 1
 
-    for photo in photos:
-        Photo.objects.update_or_create(
-            pk=photo['id'],
-            defaults=dict(
-                url=photo.getPhotoFile(),
-                rotation=photo.rotation,
-                title=photo['title']
-            )
+    def _get_photo_values(photo):
+        # On the raspberry Pi this seems to sometimes die, hence it's wrapped in a retriable func
+        return dict(
+            url=photo.getPhotoFile(),
+            rotation=photo.rotation,
+            title=photo['title']
         )
+
+    for photo in photos:
+        defaults = utils.do_with_retry(_get_photo_values, photo)
+        Photo.objects.update_or_create(pk=photo['id'], defaults=defaults)
     return HttpResponse("Photo list refreshed")
 
 
