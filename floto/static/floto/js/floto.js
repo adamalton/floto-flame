@@ -7,6 +7,8 @@ var floto = {
 	displayTime: 15000,
 	transitionTime: 2000, // the time that our CSS transition takes
 	refreshListTime: 1000 * 60 * 60, // 1 hour
+	hideMouseTime: 5000,
+	mouseHideTimeoutlID: null,
 	$frame: null,
 
 	init: function(){
@@ -16,6 +18,8 @@ var floto = {
 		setInterval(floto.changePhoto, floto.displayTime);
 		setInterval(floto.triggerPhotoListRefresh, floto.refreshListTime);
 		floto.tryEnterFullScreen();
+		floto.resetMouseHide();
+		$(document).on("mousemove", floto.resetMouseHide);
 	},
 
 	log: function(msg){
@@ -112,6 +116,20 @@ var floto = {
 
 	enterFullScreen: function(){
 		floto.$frame[0].mozRequestFullScreen();
+	},
+
+	hideMouse: function(){
+		$("body").addClass("hidemouse");
+	},
+
+	showMouse: function(){
+		$("body").removeClass("hidemouse");
+	},
+
+	resetMouseHide: function(){
+		clearInterval(floto.mouseHideIntervalID);
+		floto.showMouse();
+		floto.mouseHideTimeoutlID = setTimeout(floto.hideMouse, floto.hideMouseTime);
 	}
 };
 

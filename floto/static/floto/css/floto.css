@@ -58,3 +58,7 @@ body{
 	x-webkit-transform:rotate(1270deg);
 	transform:rotate(270deg);
 }
+
+.hidemouse{
+	cursor: none;
+}
