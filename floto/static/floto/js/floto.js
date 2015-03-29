@@ -107,7 +107,7 @@ var floto = {
 		// if that restriction is disabled we can do it directly
 		floto.enterFullScreen(); // This doesn't actually throw an error
 		// And there's no way to check if full screen is activated
-		$(document).on('click', floto.enterFullScreen); // So we have to do this anyway
+		$(document).on("click", "img", floto.enterFullScreen); // So we have to do this anyway
 	},
 
 	enterFullScreen: function(){
