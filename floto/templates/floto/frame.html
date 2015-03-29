@@ -4,7 +4,10 @@
 {% block title %}Flickr Photo Frame{% endblock %}
 
 {% block body %}
-	<div id="frame"></div>
+	<div id="frame">
+		<img class="current" />
+		<img class="upnext" />
+	</div>
 	<script src="{{STATIC_URL}}jquery-2.1.3.min.js"></script>
 	<script src="{{STATIC_URL}}floto/js/floto.js"></script>
 {% endblock body %}

@@ -5,12 +5,14 @@ var floto = {
 	photoList: [],
 	nextPhotoIndex: null,
 	displayTime: 15000,
+	transitionTime: 2000, // the time that our CSS transition takes
 	refreshListTime: 1000 * 60 * 60, // 1 hour
 	$frame: null,
 
 	init: function(){
 		floto.$frame = $("#frame");
 		floto.getPhotoList();
+		floto.$frame.find("img").load(floto.fixTransformedDimensions);
 		setInterval(floto.changePhoto, floto.displayTime);
 		setInterval(floto.triggerPhotoListRefresh, floto.refreshListTime);
 		floto.tryEnterFullScreen();
@@ -48,25 +50,12 @@ var floto = {
 		$.get(floto.triggerPhotoListRefreshURL, null, floto.getPhotoList);
 	},
 
-	insertImg: function(photo, classes){
-		// Create a jQuery object of a <img> tag for the given photo object from the API
-		floto.log("insertImg called");
-		return $('<img/>')
-			.attr('src', photo.serving_url)
-			.addClass('rotation' + String(photo.rotation))
-			.addClass(classes)
-			.load(floto.fixTransformedDimensions)
-			.appendTo(floto.$frame);
-	},
-
 	setFirstPhoto: function(){
 		floto.log("setFirstPhoto called");
-		if(floto.$frame.find("img").length){
+		if(floto.$frame.find("img.current").attr("src")){
 			floto.log("First photo already set.");
 		}else{
-			floto.nextPhotoIndex = 0;
-			photo = floto.photoList[floto.nextPhotoIndex];
-			var $img = floto.insertImg(photo, 'current');
+			floto.nextPhotoIndex = -1; // because putNextPhotoInPlace puts the NEXT photo in place
 			floto.putNextPhotoInPlace();
 		}
 	},
@@ -76,23 +65,27 @@ var floto = {
 		if(floto.nextPhotoIndex >= floto.photoList.length){
 			floto.nextPhotoIndex = -1;
 		}
+		// It's important that we re-use the same <img> tag because browser's keep old elements
+		// in memory (as oldChild), so if we create a new <img> each time we slowly eat up all
+		// the memory and the computer grinds to a halt.
 		photo = floto.photoList[floto.nextPhotoIndex + 1];
-		var $img = floto.insertImg(photo, 'upnext');
+		floto.$frame.find("img.upnext")
+			.attr("src", photo.serving_url)
+			.attr("class", "upnext") //remove all the rotationX classes
+			//.load(floto.fixTransformedDimensions) // assume this is already done
 	},
 
 	changePhoto: function(){
 		floto.log("changePhoto called");
-		floto.$frame.find("img.upnext").animate({"opacity":1}, 400);
-		floto.$frame.find("img.current").animate(
-			{"opacity": 0}, 400, "swing",
-			function(){
-				floto.log("animation finished");
-				$(this).remove();
-				floto.$frame.find("img.upnext").removeClass("upnext").addClass("current");
-				floto.nextPhotoIndex ++;
-				floto.putNextPhotoInPlace();
-			}
-		);
+		// Get both images before we change the class, otherwise which image is which will change
+		var $upnext = floto.$frame.find("img.upnext");
+		var $current =  floto.$frame.find("img.current");
+		// trigger the CSS transitions
+		$upnext.removeClass("upnext").addClass("current");
+		$current.removeClass("current").addClass("upnext");
+		// put the next photo into place once the transitions have finished
+		setTimeout(floto.putNextPhotoInPlace, floto.transitionTime);
+		floto.nextPhotoIndex ++;
 	},
 
 	fixTransformedDimensions: function(){

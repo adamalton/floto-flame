@@ -29,6 +29,8 @@ body{
 
 #frame img.current{
 	z-index: 2;
+	opacity: 1;
+	transition: opacity 2s;
 }
 
 #frame img.upnext{
