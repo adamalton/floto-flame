@@ -92,6 +92,24 @@ CACHES = {
     }
 }
 
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers':['console'],
+            'propagate': True,
+            'level':'DEBUG',
+        }
+    },
+}
+
+
 IMAGES_DIR = os.path.join(BASE_DIR, '.cache', 'images')
 
 FLICKR_API_KEY = '67be103b76e8c2569c4a366cc3f02b11'
