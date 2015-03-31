@@ -2,4 +2,4 @@
 cd ~/photoframe_env
 source bin/activate
 cd floto-flame
-python manage.py runserver
+nohup python manage.py runserver &
