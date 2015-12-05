@@ -47,3 +47,4 @@ def shutdown():
         itself is running :-/
     """
     subprocess.call(["sudo", "shutdown"])
+    subprocess.call(["sudo", "shutdown", "now"])
