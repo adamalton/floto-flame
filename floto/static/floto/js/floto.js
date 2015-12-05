@@ -61,6 +61,7 @@ var floto = {
 		}else{
 			floto.nextPhotoIndex = -1; // because putNextPhotoInPlace puts the NEXT photo in place
 			floto.putNextPhotoInPlace();
+			floto.changePhoto();
 		}
 	},
 
