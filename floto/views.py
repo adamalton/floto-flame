@@ -92,3 +92,11 @@ def image_proxy(request, photo_id):
         photo.cache_image()
     image_data = photo.cached_image.read()
     return HttpResponse(image_data, content_type=photo.content_type)
+
+
+def shutdown(request):
+    if request.method == "POST":
+        utils.shutdown()
+        return HttpResponse("Shutting down...") # It may not even get this far
+    else:
+        return render(request, "floto/shutdown.html", {})

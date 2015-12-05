@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Shutdown - Flickr Photo Frame{% endblock %}
+
+{% block body %}
+	<div id="shutdown">
+		<h1>Shutdown</h1>
+		<form method="post">
+			{% csrf_token %}
+			<p>Are you sure you want to shut down the photo frame?</p>
+			<div>
+				<button type="submit">Shutdown</button>
+			</div>
+		</form>
+	</div>
+{% endblock body %}

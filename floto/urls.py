@@ -10,4 +10,5 @@ urlpatterns = patterns('floto.views',
     url(r'^image-proxy/(?P<photo_id>\d+)/$', 'image_proxy', name='image_proxy'),
     url(r'^start-oauth/$', 'start_oauth', name='start_oauth'),
     url(r'^oauth-callback/$', 'oauth_callback', name='oauth_callback'),
+    url(r'shutdown/$', 'shutdown', name='shutdown'),
 )

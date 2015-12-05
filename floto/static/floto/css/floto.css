@@ -62,3 +62,21 @@ body{
 .hidemouse{
 	cursor: none;
 }
+
+
+/************************************* ADMIN STUFF *************************************/
+
+#shutdown{
+	color: #fff;
+	text-align: center;
+	font-size: 24px;
+}
+#shutdown h1{
+	font-size: 38px;
+}
+#shutdown button{
+	background: red;
+	padding:20px;
+	font-size: inherit;
+	margin-top: 40px;
+}

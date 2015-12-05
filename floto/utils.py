@@ -1,3 +1,5 @@
+# STANDARD LIB
+import subprocess
 # LIBRARIES
 from django.core.urlresolvers import reverse
 
@@ -37,3 +39,11 @@ def do_with_retry(func, *args, **kwargs):
         except catch:
             tries += 1
     raise
+
+
+def shutdown():
+    """ Call the shell script that shuts down the Raspberry Pi.
+        This may cause destruction because it kills the machine on which this python process
+        itself is running :-/
+    """
+    subprocess.call(["sudo", "shutdown"])
