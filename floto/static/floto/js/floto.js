@@ -70,13 +70,14 @@ var floto = {
 		if(floto.nextPhotoIndex >= floto.photoList.length){
 			floto.nextPhotoIndex = -1;
 		}
-		// It's important that we re-use the same <img> tag because browser's keep old elements
+		// It's important that we re-use the same <img> tag because browsers keep old elements
 		// in memory (as oldChild), so if we create a new <img> each time we slowly eat up all
 		// the memory and the computer grinds to a halt.
 		photo = floto.photoList[floto.nextPhotoIndex + 1];
 		floto.$frame.find("img.upnext")
 			.attr("src", photo.serving_url)
 			.attr("class", "upnext") //remove all the rotationX classes
+			.addClass("rotation" + photo.rotation);
 			//.load(floto.fixTransformedDimensions) // assume this is already done
 	},
 
