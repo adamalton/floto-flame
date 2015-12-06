@@ -75,7 +75,8 @@ var floto = {
 		// the memory and the computer grinds to a halt.
 		photo = floto.photoList[floto.nextPhotoIndex + 1];
 		floto.$frame.find("img.upnext")
-			.attr("src", photo.serving_url)
+			.attr("style", "") // remove the old max-height/-width that were added by fixTransformedDimensions
+			.attr("src", photo.serving_url) // this triggers fixTransformedDimensions, hence it's second
 			.attr("class", "upnext") //remove all the rotationX classes
 			.addClass("rotation" + photo.rotation);
 			//.load(floto.fixTransformedDimensions) // assume this is already done
