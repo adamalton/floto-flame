@@ -84,3 +84,12 @@ body{
 	border: none;
 	border-radius: 15px;
 }
+@keyframes pulse {
+	0% {opacity: 1;}
+	50% {opacity: 0.3;}
+	100% {opacity: 1;}
+}
+
+#shutdown .pulse{
+	animation: pulse 1s ease-in-out 0s reverse infinite;
+}

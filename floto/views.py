@@ -96,7 +96,11 @@ def image_proxy(request, photo_id):
 
 def shutdown(request):
     if request.method == "POST":
+        # This doesn't seem to shut the computer down IMMEDIATELY, so we can redirect and it will
+        # probably manage to render the page before the computer shuts down
         utils.shutdown()
-        return HttpResponse("Shutting down...") # It may not even get this far
+        request.session["shutting_down"] = True
+        return HttpResponseRedirect(request.path)
     else:
-        return render(request, "floto/shutdown.html", {})
+        shutting_down = request.session.pop("shutting_down", False)
+        return render(request, "floto/shutdown.html", {"shutting_down": shutting_down})

@@ -5,6 +5,10 @@
 {% block body %}
 	<div id="shutdown">
 		<h1>Shutdown</h1>
+		{% if shutting_down %}
+			<p class="pulse">Shutting down...</p>
+		{% endif %}
+
 		<form method="post">
 			{% csrf_token %}
 			<p>Are you sure you want to shut down the photo frame?</p>
