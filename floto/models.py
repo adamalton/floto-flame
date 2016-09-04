@@ -16,6 +16,10 @@ from floto.fields import JSONField
 class Album(models.Model):
     id = models.PositiveIntegerField(primary_key=True)  # prevent it being an AutoField
     title = models.CharField(max_length=255)
+    ignore = models.BooleanField(
+        default=False,
+        help_text="Ignore this album for display purposes? E.g. for the 'Auto upload' album."
+    )
 
 
 class Photo(models.Model):
