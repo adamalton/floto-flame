@@ -6,4 +6,5 @@ PHOTO_TITLES_TO_IGNORE = [
     r"^$",
     r"^\s+$",
     r"^IMG_",
+    r"^DSC[A-Z]*[0-9]+",
 ]
