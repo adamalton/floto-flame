@@ -1,4 +1,5 @@
 # STANDARD LIB
+import json
 import logging
 import StringIO
 import urllib2
@@ -53,4 +54,19 @@ class Photo(models.Model):
         if ext in ('jpg', 'jpeg', 'png', 'gif', 'tiff'):
             return "image/%s" % ext
         return ""
+
+    @property
+    def location_display(self):
+        """ Take the JSON of the location information and return a nicely formatted string
+            describing the location.
+        """
+        location = json.loads(self.location)
+        parts = ['country', 'city', 'neighborhood']
+        result = u""
+        for part in parts:
+            part_string = location.get(part)
+            if part_string:
+                result += u"%s, " % part_string
+        result.rstrip(u", ")
+        return result
 
