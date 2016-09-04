@@ -97,6 +97,7 @@ def _update_album_info(photo, api_photo=None):
         album info.
     """
     if api_photo is None:
+        flickr_api.set_auth_handler(AUTH_FILENAME)
         api_photo = flickr_api.Photo(id=photo.id)
     api_albums = api_photo.getAllContexts()[0]  # It returns a list of [albums, pools]
     albums = []
