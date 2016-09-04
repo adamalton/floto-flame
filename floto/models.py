@@ -85,3 +85,9 @@ class Photo(models.Model):
             if re.match(regex, title):
                 return u""
         return title
+
+    @property
+    def primary_album_display(self):
+        """ Get the display title of the first/most significat album this photo belongs to. """
+        album = self.albums.filter(ignore=False).first()
+        return album.title_display if album else u""
