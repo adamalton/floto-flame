@@ -76,10 +76,7 @@ def trigger_photo_list_refresh(request):
 
     for photo in photos:
         defaults = utils.do_with_retry(_get_photo_values, photo)
-        try:
-            photo_instance, created = Photo.objects.update_or_create(pk=photo['id'], defaults=defaults)
-        except:
-            import pdb; pdb.set_trace()
+        photo_instance, created = Photo.objects.update_or_create(pk=photo['id'], defaults=defaults)
         if created:
             _update_album_info(photo_instance, photo)
     return HttpResponse("Photo list refreshed")
