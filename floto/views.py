@@ -85,6 +85,15 @@ def trigger_photo_list_refresh(request):
     return HttpResponse("Photo list refreshed")
 
 
+def trigger_album_info_refresh(request):
+    """ For existing photos, make sure that the `albums` field (and related Album objects) are up
+        to date.
+    """
+    # This doesn't need doing very often, and we might not want to update them *all* at once, as
+    # that might block other requests, so just do 100 random ones at a time and we can call it often
+    limit = request.GET.get('limit', 100)
+    for photo in Photo.objects.order_by('?')[:limit]:
+        _update_album_info(photo)
 
 
 def _update_album_info(photo, api_photo=None):
