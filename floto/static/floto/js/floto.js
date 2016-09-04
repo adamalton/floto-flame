@@ -2,12 +2,14 @@ var floto = {
 
 	photoListURL: "/get-photo-list/",
 	triggerPhotoListRefreshURL: "/trigger-photo-list-refresh/",
+	triggerAlbumInfoRefreshURL: "/trigger-album-info-refresh/",
 	photoList: [],
 	nextPhotoIndex: null,
 	displayTime: 15000,
 	infoDisplayTime: 5000,
 	transitionTime: 2000, // the time that our CSS transition takes
 	refreshListTime: 1000 * 60 * 60, // 1 hour
+	refreshAlbumInfoTime: 1000 * 60 * 97, // 97 minutes, deliberately offset from the list refresh interval
 	hideMouseTime: 5000,
 	mouseHideTimeoutlID: null,
 	$frame: null,
@@ -18,6 +20,7 @@ var floto = {
 		floto.$frame.find("img").load(floto.fixTransformedDimensions);
 		setInterval(floto.changePhoto, floto.displayTime);
 		setInterval(floto.triggerPhotoListRefresh, floto.refreshListTime);
+		setInterval(floto.triggerAlbumInfoRefresh, floto.refreshAlbumInfoTime);
 		floto.tryEnterFullScreen();
 		floto.resetMouseHide();
 		$(document).on("mousemove", floto.resetMouseHide);
@@ -53,6 +56,12 @@ var floto = {
 		// Calls a URL on the server which triggers it to go and refresh its list of photos from Flickr
 		floto.log("Triggering photo list refresh (server side)");
 		$.get(floto.triggerPhotoListRefreshURL, null, floto.getPhotoList);
+	},
+
+	triggerAlbumInfoRefresh: function(){
+		// Calls a URL on the server which triggers it to go and refresh the album info for existing photos
+		floto.log("Triggering album info refresh (server side)");
+		$.get(floto.triggerAlbumInfoRefreshURL);
 	},
 
 	setFirstPhoto: function(){
