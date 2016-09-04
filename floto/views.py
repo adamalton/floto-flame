@@ -59,11 +59,10 @@ def trigger_photo_list_refresh(request):
 
     def _get_photo_values(photo):
         # On the raspberry Pi this seems to sometimes die, hence it's wrapped in a retriable func
-        info = photo.getInfo()
-        date_taken = info.get('taken')
+        date_taken = photo.get('taken')
         if date_taken:
             date_taken = datetime.strptime(date_taken, '%Y-%m-%d %H:%M:%S')
-        location = info.get('location', {})
+        location = photo.get('location', {})
         location = json.dumps(location)
 
         return dict(
