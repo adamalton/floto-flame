@@ -118,10 +118,13 @@ def get_photo_list(request):
     for photo in photos:
         data.append(dict(
             id=photo.pk,
-            title=photo.title,
+            title=photo.title_display,
             timestamp=photo.timestamp,
             rotation=photo.rotation,
             serving_url=photo.serving_url,
+            location=photo.location_display,
+            album=photo.primary_album_display,
+            date_taken=photo.date_taken_display,
         ))
     return JsonResponse(data)
 
