@@ -13,20 +13,23 @@ from django.template.defaultfilters import date as date_filter
 from django.db import models
 
 # FLOTO
-from floto.constants import ALBUM_TITLE_TRUNCATIONS, PHOTO_TITLES_TO_IGNORE
+from floto.constants import (
+    ALBUM_TITLE_TRUNCATIONS,
+    ALBUM_TITLES_TO_IGNORE,
+    PHOTO_TITLES_TO_IGNORE,
+)
 
 
 class Album(models.Model):
     id = models.PositiveIntegerField(primary_key=True)  # prevent it being an AutoField
     title = models.CharField(max_length=255)
-    ignore = models.BooleanField(
-        default=False,
-        help_text="Ignore this album for display purposes? E.g. for the 'Auto upload' album."
-    )
 
     @property
     def title_display(self):
         title = self.title
+        for regex in ALBUM_TITLES_TO_IGNORE:
+            if re.search(regex, title):
+                return u""
         for regex in ALBUM_TITLE_TRUNCATIONS:
             title = re.sub(regex, u"", title)
         return title
@@ -83,14 +86,14 @@ class Photo(models.Model):
     def title_display(self):
         title = self.title
         for regex in PHOTO_TITLES_TO_IGNORE:
-            if re.match(regex, title):
+            if re.search(regex, title):
                 return u""
         return title
 
     @property
     def primary_album_display(self):
         """ Get the display title of the first/most significat album this photo belongs to. """
-        album = self.albums.filter(ignore=False).first()
+        album = self.albums.first()
         return album.title_display if album else u""
 
     @property
