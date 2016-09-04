@@ -9,6 +9,7 @@ import urllib2
 from django.conf import settings
 from django.core.files.base import File
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import date as date_filter
 from django.db import models
 
 # FLOTO
@@ -91,3 +92,11 @@ class Photo(models.Model):
         """ Get the display title of the first/most significat album this photo belongs to. """
         album = self.albums.filter(ignore=False).first()
         return album.title_display if album else u""
+
+    @property
+    def date_taken_display(self):
+        # Python's standard strftime doesn't do the English ordinal suffix stuff, hence this
+        if not self.date_taken:
+            return u""
+        return date_filter(self.date_taken, "dS N Y")
+
