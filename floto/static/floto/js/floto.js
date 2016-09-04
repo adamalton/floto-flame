@@ -5,6 +5,7 @@ var floto = {
 	photoList: [],
 	nextPhotoIndex: null,
 	displayTime: 15000,
+	infoDisplayTime: 5000,
 	transitionTime: 2000, // the time that our CSS transition takes
 	refreshListTime: 1000 * 60 * 60, // 1 hour
 	hideMouseTime: 5000,
@@ -80,19 +81,50 @@ var floto = {
 			.attr("class", "upnext") //remove all the rotationX classes
 			.addClass("rotation" + photo.rotation);
 			//.load(floto.fixTransformedDimensions) // assume this is already done
+		var $items = $(".info.upnext .item");
+		var has_info = false;
+		$items.text(""); // wipe current info
+		$.each(
+			['title', 'album', 'location', 'date_taken'],
+			function(index, item){
+				var $item = $items.filter("." + item);
+				if(photo[item]){
+					$item.text(photo[item]).removeClass("empty");
+					has_info = true;
+				}else{
+					$item.addClass("empty");
+				}
+			}
+		);
+		// Set a class so that showPhotoInfo knows whether to show the info bar or not
+		if(has_info){
+			$(".info.upnext").addClass("hasinfo");
+		}else{
+			$(".info.upnext").removeClass("hasinfo");
+		}
 	},
 
 	changePhoto: function(){
 		floto.log("changePhoto called");
-		// Get both images before we change the class, otherwise which image is which will change
-		var $upnext = floto.$frame.find("img.upnext");
-		var $current =  floto.$frame.find("img.current");
+		// Get all elements before we change the classes, otherwise which is which will change
+		var $upnexts = $(".upnext");  // Both image and info
+		var $currents =  $(".current");
 		// trigger the CSS transitions
-		$upnext.removeClass("upnext").addClass("current");
-		$current.removeClass("current").addClass("upnext");
-		// put the next photo into place once the transitions have finished
+		$upnexts.removeClass("upnext").addClass("current");
+		$currents.removeClass("current visible").addClass("upnext");
+		// Put the next photo into place once the transitions have finished.
+		// We want the info about the current photo to be displayed for the last few seconds before
+		// we show the next one, so schedule it to be shown <infoDisplayTime> before the photo changes
+		setTimeout(floto.showPhotoInfo, floto.displayTime - floto.infoDisplayTime);
 		setTimeout(floto.putNextPhotoInPlace, floto.transitionTime);
 		floto.nextPhotoIndex ++;
+	},
+
+	showPhotoInfo: function(){
+		floto.log("showPhotoInfo called");
+		floto.log($(".info.current.hasinfo").length ? "There is info to show" : "There is no info to show");
+		// Slide the info bar up into view, assuming it's got something in it to show
+		$(".info.current.hasinfo").addClass("visible");
 	},
 
 	fixTransformedDimensions: function(){
