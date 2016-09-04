@@ -11,7 +11,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 
 # FLOTO
-from floto.fields import JSONField
 
 
 class Album(models.Model):
