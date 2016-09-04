@@ -1,6 +1,7 @@
 # STANDARD LIB
 import json
 import logging
+import re
 import StringIO
 import urllib2
 
@@ -11,6 +12,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 
 # FLOTO
+from floto.constants import ALBUM_TITLE_TRUNCATIONS, PHOTO_TITLES_TO_IGNORE
 
 
 class Album(models.Model):
@@ -20,6 +22,13 @@ class Album(models.Model):
         default=False,
         help_text="Ignore this album for display purposes? E.g. for the 'Auto upload' album."
     )
+
+    @property
+    def title_display(self):
+        title = self.title
+        for regex in ALBUM_TITLE_TRUNCATIONS:
+            title = re.sub(regex, u"", title)
+        return title
 
 
 class Photo(models.Model):
@@ -69,3 +78,10 @@ class Photo(models.Model):
         result.rstrip(u", ")
         return result
 
+    @property
+    def title_display(self):
+        title = self.title
+        for regex in PHOTO_TITLES_TO_IGNORE:
+            if re.match(regex, title):
+                return u""
+        return title
