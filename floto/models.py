@@ -98,5 +98,5 @@ class Photo(models.Model):
         # Python's standard strftime doesn't do the English ordinal suffix stuff, hence this
         if not self.date_taken:
             return u""
-        return date_filter(self.date_taken, "dS N Y")
+        return date_filter(self.date_taken, "jS N Y")
 
