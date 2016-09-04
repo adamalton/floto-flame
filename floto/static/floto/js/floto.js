@@ -142,9 +142,10 @@ var floto = {
 		// the width, which screws up other CSS.  This attempts to fix that.
 		floto.log("fixTransformedDimensions called");
 		var $img = $(this);
-		if($img.hasClass('rotation90') || $img.hasClass('rotation90')){
-			var new_max_height = Math.min(parseInt($img.css('max-width')), $img.width());
-			var new_max_width = Math.min(parseInt($img.css('max-height')), $img.height());
+		if($img.hasClass('rotation90') || $img.hasClass('rotation-90') || $img.hasClass('rotation270')){
+			floto.log("rotated photo");
+			var new_max_height = Math.min(floto.$frame.width(), $img.width());
+			var new_max_width = Math.min(floto.$frame.height(), $img.height());
 			$img.css({'max-height': new_max_height + "px", 'max-width': new_max_width + "px"});
 			// $img.css({width: $img.height() + "px", height: $img.width() + "px"});
 		}
