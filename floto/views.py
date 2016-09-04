@@ -1,5 +1,6 @@
 # STANDARD LIB
 import logging
+import os
 
 # LIBRARIES
 from django.conf import settings
@@ -40,6 +41,10 @@ def trigger_photo_list_refresh(request):
     """ Fetches the list of photos from Flickr and makes sure that we have a Photo object for each
         one.
     """
+    if not os.path.exists(os.path.join(settings.BASE_DIR, AUTH_FILENAME)):
+        logging.info("%s does not exist", AUTH_FILENAME)
+        return redirect("start_oauth")
+
     flickr_api.set_auth_handler(AUTH_FILENAME)
     photos = []
     page = 1
