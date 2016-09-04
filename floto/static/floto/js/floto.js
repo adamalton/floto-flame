@@ -118,7 +118,12 @@ var floto = {
 	},
 
 	enterFullScreen: function(){
-		floto.$frame[0].mozRequestFullScreen();
+		try{
+			floto.$frame[0].mozRequestFullScreen();
+		}catch(e){
+			floto.log("Could not enter fullscreen: " + String(e));
+		}
+
 	},
 
 	hideMouse: function(){
