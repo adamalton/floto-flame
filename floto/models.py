@@ -29,7 +29,7 @@ class Photo(models.Model):
     rotation = models.PositiveIntegerField(default=0)
     url = models.URLField()
     date_taken = models.DateTimeField(blank=True, null=True)
-    location = JSONField(blank=True, default=dict)
+    location = models.TextField(blank=True)
     albums = models.ManyToManyField(Album)
     cached_image = models.FileField(upload_to=settings.IMAGES_DIR, null=True)
 
