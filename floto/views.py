@@ -1,4 +1,6 @@
 # STANDARD LIB
+from datetime import datetime
+import json
 import logging
 import os
 
@@ -11,7 +13,7 @@ import flickr_api
 
 # FLOTO
 from floto.http import JsonResponse
-from floto.models import Photo
+from floto.models import Photo, Album
 from floto import utils
 
 PHOTO_TAGS = "photoframe"
@@ -57,16 +59,48 @@ def trigger_photo_list_refresh(request):
 
     def _get_photo_values(photo):
         # On the raspberry Pi this seems to sometimes die, hence it's wrapped in a retriable func
+        info = photo.getInfo()
+        date_taken = info.get('taken')
+        if date_taken:
+            date_taken = datetime.strptime(date_taken, '%Y-%m-%d %H:%M:%S')
+        location = info.get('location', {})
+        location = json.dumps(location)
+
         return dict(
             url=photo.getPhotoFile(),
             rotation=photo.rotation,
-            title=photo['title']
+            title=photo['title'],
+            date_taken=date_taken,
+            location=location,
         )
 
     for photo in photos:
         defaults = utils.do_with_retry(_get_photo_values, photo)
-        Photo.objects.update_or_create(pk=photo['id'], defaults=defaults)
+        try:
+            photo_instance, created = Photo.objects.update_or_create(pk=photo['id'], defaults=defaults)
+        except:
+            import pdb; pdb.set_trace()
+        if created:
+            _update_album_info(photo_instance, photo)
     return HttpResponse("Photo list refreshed")
+
+
+
+
+def _update_album_info(photo, api_photo=None):
+    """ Given a models.Photo object, and optionally a flickr_api.Photo instance of it, update its
+        album info.
+    """
+    if api_photo is None:
+        api_photo = flickr_api.Photo(id=photo.id)
+    api_albums = api_photo.getAllContexts()[0]  # It returns a list of [albums, pools]
+    albums = []
+    for api_album in api_albums:
+        album, created = Album.objects.update_or_create(
+            id=api_album.id, defaults={"title": api_album.title}
+        )
+        albums.append(album)
+    photo.albums.set(albums)
 
 
 def get_photo_list(request):
