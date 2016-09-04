@@ -9,6 +9,14 @@ from django.core.files.base import File
 from django.core.urlresolvers import reverse
 from django.db import models
 
+# FLOTO
+from floto.fields import JSONField
+
+
+class Album(models.Model):
+    id = models.PositiveIntegerField(primary_key=True)  # prevent it being an AutoField
+    title = models.CharField(max_length=255)
+
 
 class Photo(models.Model):
     id = models.PositiveIntegerField(primary_key=True) # prevent it being an AutoField
@@ -16,6 +24,9 @@ class Photo(models.Model):
     timestamp = models.DateTimeField(blank=True, null=True)
     rotation = models.PositiveIntegerField(default=0)
     url = models.URLField()
+    date_taken = models.DateTimeField(blank=True, null=True)
+    location = JSONField(blank=True, default=dict)
+    albums = models.ManyToManyField(Album)
     cached_image = models.FileField(upload_to=settings.IMAGES_DIR, null=True)
 
     def cache_image(self, refresh=False):
@@ -38,5 +49,4 @@ class Photo(models.Model):
         if ext in ('jpg', 'jpeg', 'png', 'gif', 'tiff'):
             return "image/%s" % ext
         return ""
-
 
