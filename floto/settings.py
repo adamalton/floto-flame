@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import logging
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -114,22 +115,11 @@ CACHES = {
     }
 }
 
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console':{
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers':['console'],
-            'propagate': True,
-            'level':'DEBUG',
-        }
-    },
-}
+
+# LOGGING
+# Override the *system* default log level (which seems to be 'ERROR') so that messages are printed
+# to the console.  This is nothing to do with Django's logging setup
+logging.getLogger().setLevel('DEBUG')
 
 
 IMAGES_DIR = os.path.join(BASE_DIR, '.cache', 'images')
