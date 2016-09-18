@@ -161,7 +161,7 @@ var floto = {
 
 	enterFullScreen: function(){
 		try{
-			floto.$frame[0].mozRequestFullScreen();
+			document.body.mozRequestFullScreen();
 		}catch(e){
 			floto.log("Could not enter fullscreen: " + String(e));
 		}
