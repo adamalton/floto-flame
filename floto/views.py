@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 import flickr_api
 
 # FLOTO
@@ -53,16 +54,17 @@ def trigger_photo_list_refresh(request):
     pages = 1
     while page <= pages:
         logging.info("Fetching photos from Flickr API, page %s", page)
-        result = flickr_api.Photo.search(tags=PHOTO_TAGS, user_id="me", page=page)
+        result = flickr_api.Photo.search(tags=PHOTO_TAGS, user_id="me", page=page, extras="date_taken")
         photos += [p for p in result]
         pages = result.info.pages
         page += 1
 
     def _get_photo_values(photo):
         # On the raspberry Pi this seems to sometimes die, hence it's wrapped in a retriable func
-        date_taken = photo.get('taken')
-        if date_taken:
-            date_taken = datetime.strptime(date_taken, '%Y-%m-%d %H:%M:%S')
+        date_taken = photo.datetaken
+        date_taken = datetime.strptime(date_taken, '%Y-%m-%d %H:%M:%S')
+        # Stop Django complaining about it not being explicitly UTC
+        date_taken = timezone.make_aware(date_taken)
         location = photo.get('location', {})
         location = json.dumps(location)
 
