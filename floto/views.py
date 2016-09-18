@@ -52,6 +52,7 @@ def trigger_photo_list_refresh(request):
     page = 1
     pages = 1
     while page <= pages:
+        logging.info("Fetching photos from Flickr API, page %s", page)
         result = flickr_api.Photo.search(tags=PHOTO_TAGS, user_id="me", page=page)
         photos += [p for p in result]
         pages = result.info.pages
