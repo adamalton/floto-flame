@@ -42,6 +42,7 @@ class Photo(models.Model):
     rotation = models.PositiveIntegerField(default=0)
     url = models.URLField()
     date_taken = models.DateTimeField(blank=True, null=True)
+    date_taken_granularity = models.PositiveIntegerField(blank=True, null=True)
     location = models.TextField(blank=True, default="{}")
     albums = models.ManyToManyField(Album)
     cached_image = models.FileField(upload_to=settings.IMAGES_DIR, null=True)
