@@ -73,6 +73,7 @@ def trigger_photo_list_refresh(request):
             rotation=photo.rotation,
             title=photo['title'],
             date_taken=date_taken,
+            date_taken_granularity=int(photo.datetakengranularity),
             location=location,
         )
 
