@@ -99,8 +99,20 @@ class Photo(models.Model):
 
     @property
     def date_taken_display(self):
-        # Python's standard strftime doesn't do the English ordinal suffix stuff, hence this
+        """ Return a nicely formatted date, appropriate for the date granularity.
+            0   Y-m-d H:i:s
+            4   Y-m
+            6   Y
+            8   Circa...
+        """
         if not self.date_taken:
             return u""
-        return date_filter(self.date_taken, "jS N Y")
-
+        if self.date_taken_granularity == 8:
+            return self.date_taken.strftime(u"Circa %Y")
+        elif self.date_taken_granularity == 6:
+            return self.date_taken.strftime(u"Sometime in %Y")
+        elif self.date_taken_granularity == 4:
+            return self.date_taken.strftime(u"%B %Y")
+        elif self.date_taken_granularity in (2, 0):
+            # Python's standard strftime doesn't do the English ordinal suffix stuff, hence this
+            return date_filter(self.date_taken, "jS N Y")
