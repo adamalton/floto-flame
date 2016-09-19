@@ -13,6 +13,7 @@ from django.utils import timezone
 import flickr_api
 
 # FLOTO
+from floto.constants import PHOTO_LIST_SESSION_KEY, CURRENT_PHOTO_INDEX_SESSION_KEY
 from floto.http import JsonResponse
 from floto.models import Photo, Album
 from floto import utils
@@ -21,7 +22,7 @@ PHOTO_TAGS = "photoframe"
 
 AUTH_CACHE_KEY = "flickr_api_auth_object"
 AUTH_FILENAME = "flickr_api_auth.txt"
-flickr_api.set_keys(api_key=settings.FLICKR_API_KEY, api_secret = settings.FLICKR_API_SECRET)
+flickr_api.set_keys(api_key=settings.FLICKR_API_KEY, api_secret=settings.FLICKR_API_SECRET)
 
 
 def start_oauth(request):
@@ -129,6 +130,9 @@ def get_photo_list(request):
             album=photo.primary_album_display,
             date_taken=photo.date_taken_display,
         ))
+    # Store this list of photos in the session so that the admin UI knows the list of photos
+    # that the frame is using
+    request.session[PHOTO_LIST_SESSION_KEY] = data
     return JsonResponse(data)
 
 
@@ -146,6 +150,27 @@ def image_proxy(request, photo_id):
         photo.cache_image()
     image_data = photo.cached_image.read()
     return HttpResponse(image_data, content_type=photo.content_type)
+
+
+def store_current_photo_index(request):
+    """ A view which is called by the photo frame to tell the server which photo it is
+        currently displayed.  This info is then used by the admin system.
+    """
+    try:
+        photo_index = int(request.POST['photo_index'])
+    except (KeyError, ValueError):
+        return HttpResponse("'photo_index' POST value missing or not an integer", status=400)
+    request.session[CURRENT_PHOTO_INDEX_SESSION_KEY] = photo_index
+    return HttpResponse("OK")
+
+
+def admin(request):
+    """ Admin home page. """
+    context = dict(
+        photos=request.session.get(PHOTO_LIST_SESSION_KEY, []),
+        current_photo_index=request.session.get(CURRENT_PHOTO_INDEX_SESSION_KEY),
+    )
+    return render(request, "floto/admin.html", context)
 
 
 def shutdown(request):

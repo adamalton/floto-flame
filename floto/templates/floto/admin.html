@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Flickr Photo Frame{% endblock %}
+
+{% block body %}
+	<h1>Flickr Photo Frame Admin</h1>
+	<div id="admin">
+		<ul>
+			{% for photo in photos %}
+				<li
+					id="photo-{{photo.id}}"
+					class="{% if forloop.index == current_photo_index %}current{% elif forloop.index > current_photo_index %}upcoming{% endif %}">
+					<img src="{{serving_url}}" title="{{photo.title}}" />
+				</li>
+			{% empty %}
+				<li>No current list of photos</li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock body %}

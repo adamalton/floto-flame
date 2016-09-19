@@ -1,6 +1,5 @@
 # THIRD PARTY
-from django.conf.urls import include, url
-from django.contrib import admin
+from django.conf.urls import url
 
 # FLOTO
 from floto import views
@@ -15,5 +14,7 @@ urlpatterns = [
     url(r'^image-proxy/(?P<photo_id>\d+)/$', views.image_proxy, name='image_proxy'),
     url(r'^start-oauth/$', views.start_oauth, name='start_oauth'),
     url(r'^oauth-callback/$', views.oauth_callback, name='oauth_callback'),
+    url(r'store-current-photo-index/$', views.store_current_photo_index, name='store_current_photo_index'),
+    url(r'admin/$', views.admin, name='admin'),
     url(r'shutdown/$', views.shutdown, name='shutdown'),
 ]
