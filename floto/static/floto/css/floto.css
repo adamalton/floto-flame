@@ -82,7 +82,7 @@ body{
 }
 
 .info.visible{
-	height: 130px;
+	height: 150px;
 	transition: height 1s;
 }
 
